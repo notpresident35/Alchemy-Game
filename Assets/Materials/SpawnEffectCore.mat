@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SpawnEffectCore
+  m_Shader: {fileID: 4800000, guid: 6590f10a94b95ca47ac2ca24fe219ee3, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: 966f345fd4a27ed4fae6b2ad96719e90, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Completeness: 0.596
+    - _Dip: -0.15
+    - _NoiseBandPosition: 0.045
+    - _NoiseBandSize: 0.18
+    - _NoiseDensity: 0.46
+    - _Radius: 23.1
+    - _Resolution: 24
+    - _Spin: 1
+    - _SwirlAmplitude: 0.175
+    - _SwirlDip: -0.15
+    - _SwirlFrequency: 8.5
+    - _SwirlSpeed: 60
+    - _SwirlSpeedRamp: 0.19
+    - _SwirlStartOffset: 0.227
+    - _WaveAmplitude: 0.151
+    - _WaveFrequency: 10
+    - _WaveSpeed: 100
+    - _WaveStartOffset: 0.395
+    m_Colors:
+    - _NoiseColorCrunch: {r: 0.74, g: 0.6, b: 0, a: 0}
+    - _NoiseScrollSpeed: {r: 18.7, g: 1.8, b: 0, a: 0}
+    - _NoiseVerticalRange: {r: 0.52, g: 0.7, b: 0, a: 0}
+    - _PrimaryColor: {r: 0.7460653, g: 0.14070843, b: 0.9622642, a: 1}
+  m_BuildTextureStacks: []

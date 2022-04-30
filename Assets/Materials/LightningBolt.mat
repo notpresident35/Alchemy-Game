@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: LightningBolt
+  m_Shader: {fileID: 4800000, guid: abe5b89b0a96d0e48adc56e2b0a06cdd, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 10305, guid: 0000000000000000f000000000000000, type: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: 966f345fd4a27ed4fae6b2ad96719e90, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Completeness: 0.608
+    - _Dip: 0
+    - _NoiseBandPosition: 0.07
+    - _NoiseBandSize: 0.36
+    - _NoiseDensity: 0.54
+    - _Radius: 256
+    - _Resolution: 8
+    - _Spin: 1
+    - _SwirlSpeed: 1
+    - _SwirlSpeedRamp: 0
+    - _WaveAmplitude: 0.538
+    - _WaveFrequency: 1
+    - _WaveSpeed: 1
+    - _WaveStartOffset: 0.345
+    - _Width: 4
+    m_Colors:
+    - _NoiseColorCrunch: {r: 0.2, g: 0.6, b: 0, a: 0}
+    - _NoiseScrollSpeed: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _PrimaryColor: {r: 1, g: 0.5896226, b: 0.5896226, a: 1}
+  m_BuildTextureStacks: []
