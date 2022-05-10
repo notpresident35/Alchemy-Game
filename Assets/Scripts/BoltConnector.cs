@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class BoltConnector : MonoBehaviour
 {
-    public Transform StartPoint;
-    public Transform EndPoint;
+    public Transform[] Path;
     public float TargetSegmentLength;
 
     private LineRenderer LightningRenderer;
@@ -16,13 +15,25 @@ public class BoltConnector : MonoBehaviour
 
     void Update()
     {
-        Vector3 dir = (EndPoint.position - StartPoint.position).normalized;
-        float dist = (EndPoint.position - StartPoint.position).magnitude;
-        int segmentCount = Mathf.FloorToInt(dist / TargetSegmentLength);
-        float segmentLengthModifier = dist / (TargetSegmentLength * segmentCount);
-        LightningRenderer.positionCount = segmentCount + 1;
-        for (int i = 0; i < segmentCount + 1; i++) {
-            LightningRenderer.SetPosition(i, StartPoint.position + (dir * i * TargetSegmentLength * segmentLengthModifier));
-        }
-    }
+		LightningRenderer.positionCount = 0;
+		int posCounter = 0;
+
+		// Connect each point with the line renderer
+		for (int i = 0; i < Path.Length - 1; i++)
+		{
+			Vector3 StartPos = Path[i].position;
+			Vector3 ToEndPosVector = Path[i + 1].position - StartPos;
+
+			int segmentCount = Mathf.FloorToInt(ToEndPosVector.magnitude / TargetSegmentLength);
+			float segmentLengthModifier = ToEndPosVector.magnitude / (TargetSegmentLength * segmentCount);
+			LightningRenderer.positionCount += segmentCount + 1;
+			for (int j = 0; j < segmentCount + 1; j++)
+			{
+				LightningRenderer.SetPosition(j + posCounter, StartPos + (ToEndPosVector.normalized * j * TargetSegmentLength * segmentLengthModifier));
+			}
+			posCounter += segmentCount;
+		}
+		LightningRenderer.SetPosition(posCounter + 1, Path[Path.Length - 1].position);
+		LightningRenderer.positionCount--;
+	}
 }

@@ -30,11 +30,11 @@ Material:
     m_Floats:
     - _Completeness: 0.596
     - _Dip: 0.12
-    - _NoiseBandPosition: 0.045
-    - _NoiseBandSize: 0.18
+    - _NoiseBandPosition: 0.09
+    - _NoiseBandSize: 0.2
     - _NoiseDensity: 0.46
-    - _Radius: 23.1
-    - _Resolution: 24
+    - _Radius: 31.5
+    - _Resolution: 32
     - _Spin: -1
     - _SwirlAmplitude: 0.175
     - _SwirlDip: 0.12
@@ -42,7 +42,7 @@ Material:
     - _SwirlSpeed: 60
     - _SwirlSpeedRamp: -0.16
     - _SwirlStartOffset: 0.125
-    - _WaveAmplitude: 0.151
+    - _WaveAmplitude: 0.166
     - _WaveFrequency: 10
     - _WaveSpeed: 100
     - _WaveStartOffset: 0.318

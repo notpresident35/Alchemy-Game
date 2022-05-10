@@ -28,13 +28,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Completeness: 0.596
+    - _Completeness: 0.646
     - _Dip: -0.15
-    - _NoiseBandPosition: 0.045
-    - _NoiseBandSize: 0.18
+    - _NoiseBandPosition: 0.09
+    - _NoiseBandSize: 0.2
     - _NoiseDensity: 0.46
-    - _Radius: 23.1
-    - _Resolution: 24
+    - _Radius: 31.5
+    - _Resolution: 32
     - _Spin: 1
     - _SwirlAmplitude: 0.175
     - _SwirlDip: -0.15
@@ -42,7 +42,7 @@ Material:
     - _SwirlSpeed: 60
     - _SwirlSpeedRamp: 0.19
     - _SwirlStartOffset: 0.227
-    - _WaveAmplitude: 0.151
+    - _WaveAmplitude: 0.166
     - _WaveFrequency: 10
     - _WaveSpeed: 100
     - _WaveStartOffset: 0.395
