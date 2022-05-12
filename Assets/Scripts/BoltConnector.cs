@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class BoltConnector : MonoBehaviour
 {
+	public float Connection;
+
     public Transform[] Path;
     public float TargetSegmentLength;
+	public AnimationCurve ConnectionToWidthCompression;
+	public AnimationCurve ConnectionToGapSize;
+	public AnimationCurve ConnectionToMidWidth;
+	public AnimationCurve ConnectionToEndWidth;
 
     private LineRenderer LightningRenderer;
 
@@ -35,5 +41,13 @@ public class BoltConnector : MonoBehaviour
 		}
 		LightningRenderer.SetPosition(posCounter + 1, Path[Path.Length - 1].position);
 		LightningRenderer.positionCount--;
+
+		// Set line renderer width
+		AnimationCurve curve = new AnimationCurve();
+		curve.AddKey(new Keyframe (Mathf.Clamp01(ConnectionToWidthCompression.Evaluate(Connection) / 2 - 0.0002f), ConnectionToEndWidth.Evaluate(Connection), 0, 0));
+		curve.AddKey(new Keyframe(Mathf.Clamp01(0.5f - (ConnectionToGapSize.Evaluate(Connection) / 2) - 0.0001f), ConnectionToMidWidth.Evaluate(Connection), 0, 0));
+		curve.AddKey(new Keyframe(Mathf.Clamp01(0.5f + (ConnectionToGapSize.Evaluate(Connection) / 2) + 0.0001f), ConnectionToMidWidth.Evaluate(Connection), 0, 0));
+		curve.AddKey(new Keyframe(Mathf.Clamp01(1 - ConnectionToWidthCompression.Evaluate(Connection) / 2 + 0.0002f), ConnectionToEndWidth.Evaluate(Connection), 0, 0));
+		LightningRenderer.widthCurve = curve;
 	}
 }
