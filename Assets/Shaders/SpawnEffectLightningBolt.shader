@@ -5,12 +5,12 @@ Shader "Custom/SpawnEffectLightningBolt"
         _MainTex ("Texture", 2D) = "white" {}
         _NoiseTex ("Noise Texture", 2D) = "white" {}
 
-        _UseFlash("Use Flash", Int) = 1
-        _FlashSpeed("Flash Speed", Float) = 3
+        _RenderFlash("Render Flash", Int) = 1
 
         _Resolution ("Resolution", Int) = 64
         _Width ("Width", Float) = 32
         _PrimaryColor ("Primary Color", Color) = (0, 0, 0, 0)
+        _FlashColor ("Flash Color", Color) = (1, 1, 1, 1)
     }
     SubShader
     {
@@ -54,9 +54,9 @@ Shader "Custom/SpawnEffectLightningBolt"
 
             uint _Resolution;
             float _Width;
-            float _FlashSpeed;
-            uint _UseFlash;
+            uint _RenderFlash;
             float4 _PrimaryColor;
+            float4 _FlashColor;
 
             v2f vert (appdata v)
             {
@@ -78,13 +78,9 @@ Shader "Custom/SpawnEffectLightningBolt"
                 // Creates a hard line based on width
                 fixed lineMask = saturate(_Width - dist * _Resolution);       
 
-                // ** Flashing **
-                fixed flash = cos(_FlashSpeed * _Time.y * _UseFlash) / 2 + 0.5f;
-                flash = round(flash);
-
-                // Apply texture, color, and all masks
-                fixed4 col = tex2D(_MainTex, i.uv) * i.color * _PrimaryColor;
-                col.a *= lineMask * flash;
+                // Apply texture, color (including flashing), and all masks
+                fixed4 col = tex2D(_MainTex, i.uv) * i.color * lerp(_PrimaryColor, _FlashColor, _RenderFlash);
+                col.a *= lineMask * (_RenderFlash + 1);
                 //col.a = noiseBandMask;
                 //fixed4 col = tex2D(_MainTex, i.uv) * i.color;
  

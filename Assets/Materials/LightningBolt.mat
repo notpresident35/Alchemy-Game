@@ -35,6 +35,7 @@ Material:
     - _NoiseBandSize: 0.36
     - _NoiseDensity: 0.54
     - _Radius: 256
+    - _RenderFlash: 0
     - _Resolution: 8
     - _Spin: 1
     - _SwirlSpeed: 1
@@ -46,6 +47,7 @@ Material:
     - _WaveStartOffset: 0.345
     - _Width: 4
     m_Colors:
+    - _FlashColor: {r: 1, g: 1, b: 1, a: 1}
     - _NoiseColorCrunch: {r: 0.2, g: 0.6, b: 0, a: 0}
     - _NoiseScrollSpeed: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _PrimaryColor: {r: 1, g: 0.5896226, b: 0.5896226, a: 1}

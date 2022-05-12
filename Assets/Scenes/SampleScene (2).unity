@@ -281,7 +281,7 @@ Transform:
   m_LocalScale: {x: 0.3923692, y: 0.3923692, z: 0.3923692}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!1 &256002379
 GameObject:
@@ -294,7 +294,7 @@ GameObject:
   - component: {fileID: 256002381}
   - component: {fileID: 256002380}
   m_Layer: 0
-  m_Name: Tester
+  m_Name: _Tester
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -315,6 +315,12 @@ MonoBehaviour:
   CompletenessSinSpeed: 0.5
   obj1: {fileID: 1985001013}
   obj2: {fileID: 1751450258}
+  StrikeCooldown: 1
+  StrikeFadeSpeed: 2.5
+  UseFlash: 1
+  StrikeFlashHesitation: 0.18
+  FlashSpeed: 19
+  lightningbolt: {fileID: 712078789}
 --- !u!4 &256002381
 Transform:
   m_ObjectHideFlags: 0
@@ -327,7 +333,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
@@ -340,6 +346,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -355,6 +362,39 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
+--- !u!114 &519420030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -455,17 +495,17 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0.5
       value: 0
-      inSlope: 2
-      outSlope: 2
+      inSlope: 3.125
+      outSlope: 3.125
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1
+      time: 0.82
       value: 1
-      inSlope: 2
-      outSlope: 2
+      inSlope: 3.125
+      outSlope: 3.125
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -644,10 +684,10 @@ LineRenderer:
     colorGradient:
       serializedVersion: 2
       key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 0}
-      key2: {r: 1, g: 1, b: 1, a: 0}
+      key1: {r: 1, g: 1, b: 1, a: 1}
+      key2: {r: 1, g: 1, b: 1, a: 1}
       key3: {r: 0, g: 0, b: 0, a: 1}
-      key4: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 1}
       key5: {r: 0, g: 0, b: 0, a: 0}
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
@@ -663,7 +703,7 @@ LineRenderer:
       atime1: 26214
       atime2: 39321
       atime3: 65535
-      atime4: 0
+      atime4: 65535
       atime5: 0
       atime6: 0
       atime7: 0
