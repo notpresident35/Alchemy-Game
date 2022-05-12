@@ -5,23 +5,10 @@ Shader "Custom/SpawnEffectLightningBolt"
         _MainTex ("Texture", 2D) = "white" {}
         _NoiseTex ("Noise Texture", 2D) = "white" {}
 
-        _Completeness ("Completeness", Range(0, 1)) = 0.5
+        _UseFlash("Use Flash", Int) = 1
+        _FlashSpeed("Flash Speed", Float) = 3
 
-        _SwirlSpeed ("Swirl Speed", Float) = 1
-        _SwirlSpeedRamp ("Swirl Speed Ramp", Range(-1, 1)) = 0
-        _Spin ("Spin Direction (-1 left, 1 right)", Float) = 0
-        _WaveSpeed ("Wave Speed", Float) = 1
-        _WaveFrequency ("Wave Frequency", Float) = 1
-        _WaveAmplitude ("Wave Amplitude", Range(0, 1)) = 1
-        _WaveStartOffset ("Wave Starting Offset", Range(0, 1)) = 0
-        _Dip ("Dip", Range(-1, 1)) = 0
-
-        [ShowAsVector2] _NoiseScrollSpeed ("Noise Scroll Speed", Vector) = (0.5, 0.5, 0, 0)
-        _NoiseBandPosition ("Noise Band Position", Float) = 0.4
-        _NoiseBandSize ("Noise Band Size", Float) = 0.2
-        _NoiseDensity ("Noise Density", Float) = 0
-
-        _Resolution ("Resolution", int) = 64
+        _Resolution ("Resolution", Int) = 64
         _Width ("Width", Float) = 32
         _PrimaryColor ("Primary Color", Color) = (0, 0, 0, 0)
     }
@@ -65,8 +52,10 @@ Shader "Custom/SpawnEffectLightningBolt"
             sampler2D _NoiseTex;
             float4 _NoiseTex_ST;
 
-            int _Resolution;
-            int _Width;
+            uint _Resolution;
+            float _Width;
+            float _FlashSpeed;
+            uint _UseFlash;
             float4 _PrimaryColor;
 
             v2f vert (appdata v)
@@ -87,11 +76,15 @@ Shader "Custom/SpawnEffectLightningBolt"
                 // Distance from the middle of the line to the current pixel
                 fixed dist = length(crunchedPos.y - 0.5) * 2;
                 // Creates a hard line based on width
-                fixed lineMask = saturate(_Width - dist * _Resolution);                
+                fixed lineMask = saturate(_Width - dist * _Resolution);       
+
+                // ** Flashing **
+                fixed flash = cos(_FlashSpeed * _Time.y * _UseFlash) / 2 + 0.5f;
+                flash = round(flash);
 
                 // Apply texture, color, and all masks
                 fixed4 col = tex2D(_MainTex, i.uv) * i.color * _PrimaryColor;
-                col.a *= lineMask;
+                col.a *= lineMask * flash;
                 //col.a = noiseBandMask;
                 //fixed4 col = tex2D(_MainTex, i.uv) * i.color;
  

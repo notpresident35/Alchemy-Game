@@ -30,6 +30,7 @@ Material:
     m_Floats:
     - _Completeness: 0.608
     - _Dip: 0
+    - _FlashSpeed: 45
     - _NoiseBandPosition: 0.07
     - _NoiseBandSize: 0.36
     - _NoiseDensity: 0.54
@@ -38,6 +39,7 @@ Material:
     - _Spin: 1
     - _SwirlSpeed: 1
     - _SwirlSpeedRamp: 0
+    - _UseFlash: 0
     - _WaveAmplitude: 0.538
     - _WaveFrequency: 1
     - _WaveSpeed: 1

@@ -21,7 +21,7 @@ Shader "Custom/SpawnEffectCore"
         _NoiseBandSize ("Noise Band Size", Float) = 0.2
         _NoiseDensity ("Noise Density", Float) = 0
 
-        _Resolution ("Resolution", int) = 64
+        _Resolution ("Resolution", Int) = 64
         _Radius ("Radius", Float) = 0.5
         _PrimaryColor ("Primary Color", Color) = (0, 0, 0, 0)
     }
@@ -81,8 +81,8 @@ Shader "Custom/SpawnEffectCore"
             fixed _NoiseBandSize;
             fixed _NoiseDensity;
 
-            int _Resolution;
-            int _Radius;
+            uint _Resolution;
+            float _Radius;
             float4 _PrimaryColor;
 
             v2f vert (appdata v)
