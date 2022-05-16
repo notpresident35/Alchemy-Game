@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class BoltConnector : MonoBehaviour
 {
-	public struct BoltPoint {
+	public class BoltPoint {
 		public Transform Point;
 		public Vector3 Velocity;
+		public Vector3 OffsetPos;
 	}
 
 	public float StrikeLength = 1;
@@ -51,11 +52,12 @@ public class BoltConnector : MonoBehaviour
 
 		// Spawn number of scattered points based on the distance between the start and end points
 		int pointCount = Mathf.CeilToInt((startPoint.position - endPoint.position).magnitude * PointsPerUnit);
-		float distPerPoint = (startPoint.position - endPoint.position).magnitude / Path.Count;
+		float distPerPoint = (startPoint.position - endPoint.position).magnitude / pointCount;
 		for	(int i = 0; i < pointCount; i++) {
 			BoltPoint point = new BoltPoint();
 			point.Point = new GameObject ("Bolt Point").transform;
-			point.Point.position = startPoint.position + Vector3.one * distPerPoint * i + Statics.RandVectorPosNeg(ScatterDist);
+			point.OffsetPos = Statics.RandVectorPosNeg(ScatterDist);
+			point.Point.position = startPoint.position + Vector3.one * distPerPoint * i + point.OffsetPos;
 			Path.Add(point);
 		}
 
@@ -88,10 +90,12 @@ public class BoltConnector : MonoBehaviour
 		int posCounter = 0;
 
 		// Move points
+		float distPerPoint = (startPoint.position - endPoint.position).magnitude / Path.Count;
 		for (int i = 0; i < Path.Count - 1; i++)
 		{
 			// Adjust velocity
-			Path[i].Point.position += Path[i].Velocity * Time.deltaTime;
+			Path[i].OffsetPos += Path[i].Velocity * Time.deltaTime;
+			Path[i].Point.position = startPoint.position + Vector3.one * distPerPoint * i + Path[i].OffsetPos;
 		}
 
 		// Connect each point with the line renderer

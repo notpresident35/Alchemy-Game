@@ -453,7 +453,7 @@ MonoBehaviour:
   StrikeFlashHesitation: 0.1
   FlashSpeed: 100
   ScatterDist: 0.146
-  PointsPerUnit: 6
+  PointsPerUnit: 1
   TargetSegmentLength: 0.4
   ConnectionToWidthCompression:
     serializedVersion: 2
