@@ -4,32 +4,103 @@ using UnityEngine;
 
 public class BoltConnector : MonoBehaviour
 {
-	public float Connection;
+	public struct BoltPoint {
+		public Transform Point;
+		public Vector3 Velocity;
+	}
 
-    public Transform[] Path;
+	public float StrikeLength = 1;
+	public bool UseFlash = true;
+		
+	public float StrikeFlashHesitation = 0.1f;
+	public float FlashSpeed = 100;
+
+	[Tooltip("Distance in units to scatter each point by")]
+	[Range(0, 2)]
+	public float ScatterDist;
+	public int PointsPerUnit;
+
     public float TargetSegmentLength;
 	public AnimationCurve ConnectionToWidthCompression;
 	public AnimationCurve ConnectionToGapSize;
 	public AnimationCurve ConnectionToMidWidth;
 	public AnimationCurve ConnectionToEndWidth;
 
+	private bool isStriking = false;
+	[SerializeField] private float connection;
     private LineRenderer LightningRenderer;
+    private Material mat;
+	private List<BoltPoint> Path = new List<BoltPoint>();
+	private Transform startPoint;
+	private Transform endPoint;
 
     private void Start() {
         LightningRenderer = GetComponent<LineRenderer>();
+        mat = LightningRenderer.material;
     }
+
+	// Spawn and scatter points along path from start to end position
+	public void InitializeStrike (Transform from, Transform to) {
+		// Reset
+		foreach (BoltPoint point in Path) {
+			Destroy(point.Point.gameObject);
+		}
+		Path = new List<BoltPoint>();
+		startPoint = from;
+		endPoint = to;
+
+		// Spawn number of scattered points based on the distance between the start and end points
+		int pointCount = Mathf.CeilToInt((startPoint.position - endPoint.position).magnitude * PointsPerUnit);
+		float distPerPoint = (startPoint.position - endPoint.position).magnitude / Path.Count;
+		for	(int i = 0; i < pointCount; i++) {
+			BoltPoint point = new BoltPoint();
+			point.Point = new GameObject ("Bolt Point").transform;
+			point.Point.position = startPoint.position + Vector3.one * distPerPoint * i + Statics.RandVectorPosNeg(ScatterDist);
+			Path.Add(point);
+		}
+
+		// Start animating points
+		StartCoroutine(AnimateStrike());
+	}
+
+	IEnumerator AnimateStrike () {
+		isStriking = true;
+		connection = 1;
+		for (float i = 0; i < 1; i += Time.deltaTime / StrikeLength) {
+			connection = Mathf.Clamp01(1 - i);
+			if (UseFlash && i > StrikeFlashHesitation)
+			{
+				mat.SetFloat("_RenderFlash", Mathf.RoundToInt(Mathf.Sin((i - StrikeFlashHesitation) * FlashSpeed)));
+			}
+			yield return null;
+		}
+		
+		mat.SetFloat("_RenderFlash", 0);
+		isStriking = false;
+	}
 
     void Update()
     {
+		if (!isStriking) {
+			return;
+		}
 		LightningRenderer.positionCount = 0;
 		int posCounter = 0;
 
-		// Connect each point with the line renderer
-		for (int i = 0; i < Path.Length - 1; i++)
+		// Move points
+		for (int i = 0; i < Path.Count - 1; i++)
 		{
-			Vector3 StartPos = Path[i].position;
-			Vector3 ToEndPosVector = Path[i + 1].position - StartPos;
+			// Adjust velocity
+			Path[i].Point.position += Path[i].Velocity * Time.deltaTime;
+		}
 
+		// Connect each point with the line renderer
+		for (int i = 0; i < Path.Count - 1; i++)
+		{
+			Vector3 StartPos = Path[i].Point.position;
+			Vector3 ToEndPosVector = Path[i + 1].Point.position - StartPos;
+
+			// Split sub-lines into segments, then insert positions accordingly
 			int segmentCount = Mathf.FloorToInt(ToEndPosVector.magnitude / TargetSegmentLength);
 			float segmentLengthModifier = ToEndPosVector.magnitude / (TargetSegmentLength * segmentCount);
 			LightningRenderer.positionCount += segmentCount + 1;
@@ -39,15 +110,15 @@ public class BoltConnector : MonoBehaviour
 			}
 			posCounter += segmentCount;
 		}
-		LightningRenderer.SetPosition(posCounter + 1, Path[Path.Length - 1].position);
+		LightningRenderer.SetPosition(posCounter + 1, Path[Path.Count - 1].Point.position);
 		LightningRenderer.positionCount--;
 
 		// Set line renderer width
 		AnimationCurve curve = new AnimationCurve();
-		curve.AddKey(new Keyframe (Mathf.Clamp01(ConnectionToWidthCompression.Evaluate(Connection) / 2 - 0.0002f), ConnectionToEndWidth.Evaluate(Connection), 0, 0));
-		curve.AddKey(new Keyframe(Mathf.Clamp01(0.5f - (ConnectionToGapSize.Evaluate(Connection) / 2) - 0.0001f), ConnectionToMidWidth.Evaluate(Connection), 0, 0));
-		curve.AddKey(new Keyframe(Mathf.Clamp01(0.5f + (ConnectionToGapSize.Evaluate(Connection) / 2) + 0.0001f), ConnectionToMidWidth.Evaluate(Connection), 0, 0));
-		curve.AddKey(new Keyframe(Mathf.Clamp01(1 - ConnectionToWidthCompression.Evaluate(Connection) / 2 + 0.0002f), ConnectionToEndWidth.Evaluate(Connection), 0, 0));
+		curve.AddKey(new Keyframe (Mathf.Clamp01(ConnectionToWidthCompression.Evaluate(connection) / 2 - 0.0002f), ConnectionToEndWidth.Evaluate(connection), 0, 0));
+		curve.AddKey(new Keyframe(Mathf.Clamp01(0.5f - (ConnectionToGapSize.Evaluate(connection) / 2) - 0.0001f), ConnectionToMidWidth.Evaluate(connection), 0, 0));
+		curve.AddKey(new Keyframe(Mathf.Clamp01(0.5f + (ConnectionToGapSize.Evaluate(connection) / 2) + 0.0001f), ConnectionToMidWidth.Evaluate(connection), 0, 0));
+		curve.AddKey(new Keyframe(Mathf.Clamp01(1 - ConnectionToWidthCompression.Evaluate(connection) / 2 + 0.0002f), ConnectionToEndWidth.Evaluate(connection), 0, 0));
 		LightningRenderer.widthCurve = curve;
 	}
 }

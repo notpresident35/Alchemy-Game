@@ -11,25 +11,17 @@ public class VFXTester : MonoBehaviour
 
 	[Header("Lightning Bolt")]
 	public float StrikeCooldown = 1;
-	public float StrikeFadeSpeed = 1;
-	public bool UseFlash = true;
-	public float StrikeFlashHesitation = 0.1f;
-	public float FlashSpeed = 100;
+	public Transform strikeStartPoint;
+	public Transform strikeTargetPoint;
+	public BoltConnector LightningBolt;
 
-
-	public GameObject lightningbolt;
     private Material mat1;
     private Material mat2;
-    private Material lmat;
-    private BoltConnector bolt;
 	float timer = 0;
 
     private void Start() {
         mat1 = obj1.GetComponent<Renderer>().material;
         mat2 = obj2.GetComponent<Renderer>().material;
-
-		lmat = lightningbolt.GetComponent<Renderer>().material;
-		bolt = lightningbolt.GetComponent<BoltConnector>();
 	}
 
     void Update()
@@ -38,19 +30,13 @@ public class VFXTester : MonoBehaviour
         mat1.SetFloat("_Completeness", sample);
         mat2.SetFloat("_Completeness", sample);
 
-		if (timer >= StrikeCooldown) {
-			bolt.Connection = 1;
+		if (timer > StrikeCooldown) {
 			timer = 0;
-		}
-		bolt.Connection = Mathf.Clamp01(bolt.Connection - StrikeFadeSpeed * Time.deltaTime);
-		if (UseFlash && bolt.Connection < 1 - StrikeFlashHesitation)
-		{
-			lmat.SetFloat("_RenderFlash", Mathf.RoundToInt(Mathf.Sin(bolt.Connection * FlashSpeed)));
-		}
-		else
-		{
-			lmat.SetFloat("_RenderFlash", 0);
+			print (LightningBolt.gameObject.name + ", " + strikeStartPoint.gameObject.name + ", " + strikeTargetPoint.gameObject.name);
+			LightningBolt.InitializeStrike(strikeStartPoint, strikeTargetPoint);
 		}
 		timer += Time.deltaTime;
+
+		strikeStartPoint.transform.position = new Vector3 (Mathf.Cos (Time.time * 3), Mathf.Sin (Time.time * 3), 0) * 3;
 	}
 }
