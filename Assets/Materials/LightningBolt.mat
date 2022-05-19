@@ -50,5 +50,5 @@ Material:
     - _FlashColor: {r: 1, g: 1, b: 1, a: 1}
     - _NoiseColorCrunch: {r: 0.2, g: 0.6, b: 0, a: 0}
     - _NoiseScrollSpeed: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _PrimaryColor: {r: 1, g: 0.5896226, b: 0.5896226, a: 1}
+    - _PrimaryColor: {r: 0.74509805, g: 0.14117648, b: 0.9607843, a: 1}
   m_BuildTextureStacks: []

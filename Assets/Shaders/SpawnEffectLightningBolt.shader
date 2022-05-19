@@ -5,6 +5,9 @@ Shader "Custom/SpawnEffectLightningBolt"
         _MainTex ("Texture", 2D) = "white" {}
         _NoiseTex ("Noise Texture", 2D) = "white" {}
 
+        // -1 = Invisible
+        // 0 = Solid Color
+        // 1 = Solid White
         _RenderFlash("Render Flash", Int) = 1
 
         _Resolution ("Resolution", Int) = 64

@@ -8,6 +8,7 @@ public class BoltConnector : MonoBehaviour
 		public Transform Point;
 		public Vector3 Velocity;
 		public Vector3 OffsetPos;
+		public Vector3 RandPos;
 	}
 
 	public float StrikeLength = 1;
@@ -15,6 +16,12 @@ public class BoltConnector : MonoBehaviour
 		
 	public float StrikeFlashHesitation = 0.1f;
 	public float FlashSpeed = 100;
+	public AnimationCurve FlashShaderInput;
+
+	public float ShockFrequency = 2;
+	public float ShocksWidth;
+
+	public float AAAAAAAAAAAAAAAAAAAA = 1f;
 
 	[Tooltip("Distance in units to scatter each point by")]
 	[Range(0, 2)]
@@ -27,13 +34,18 @@ public class BoltConnector : MonoBehaviour
 	public AnimationCurve ConnectionToMidWidth;
 	public AnimationCurve ConnectionToEndWidth;
 
-	private bool isStriking = false;
 	[SerializeField] private float connection;
     private LineRenderer LightningRenderer;
     private Material mat;
 	private List<BoltPoint> Path = new List<BoltPoint>();
 	private Transform startPoint;
 	private Transform endPoint;
+	private bool pathReversed = false;
+	bool striking = false;
+	float strikeTimer = 0;
+	float lastStrikeTime = 0;
+	float shockTime = 0;
+	Coroutine strikeCoroutine;
 
     private void Start() {
         LightningRenderer = GetComponent<LineRenderer>();
@@ -50,55 +62,82 @@ public class BoltConnector : MonoBehaviour
 		startPoint = from;
 		endPoint = to;
 
-		// Spawn number of scattered points based on the distance between the start and end points
+		lastStrikeTime = Time.time;
+
+		// Spawn path with number of scattered points based on the distance between the start and end points
 		int pointCount = Mathf.CeilToInt((startPoint.position - endPoint.position).magnitude * PointsPerUnit);
-		float distPerPoint = (startPoint.position - endPoint.position).magnitude / pointCount;
-		for	(int i = 0; i < pointCount; i++) {
-			BoltPoint point = new BoltPoint();
-			point.Point = new GameObject ("Bolt Point").transform;
-			point.OffsetPos = Statics.RandVectorPosNeg(ScatterDist);
-			point.Point.position = startPoint.position + Vector3.one * distPerPoint * i + point.OffsetPos;
-			Path.Add(point);
-		}
+		CreatePath(pointCount);
 
 		// Start animating points
-		StartCoroutine(AnimateStrike());
+		UpdatePath();
+		if (striking)
+		{
+			StopCoroutine(strikeCoroutine);
+		}
+		strikeCoroutine = StartCoroutine(AnimateStrike());
 	}
 
-	IEnumerator AnimateStrike () {
-		isStriking = true;
-		connection = 1;
-		for (float i = 0; i < 1; i += Time.deltaTime / StrikeLength) {
-			connection = Mathf.Clamp01(1 - i);
-			if (UseFlash && i > StrikeFlashHesitation)
+	void CreatePath(int pointCount)
+	{
+		pathReversed = false;
+		if (pointCount < Path.Count)
+		{
+			for (int i = Path.Count - pointCount; i > 0; i--)
 			{
-				mat.SetFloat("_RenderFlash", Mathf.RoundToInt(Mathf.Sin((i - StrikeFlashHesitation) * FlashSpeed)));
+				Destroy(Path[i].Point.gameObject);
+				Path.RemoveAt(i);
 			}
-			yield return null;
+		}
+		else if (pointCount > Path.Count)
+		{
+			for (int i = 0; i < pointCount - Path.Count; i++)
+			{
+				BoltPoint point = new BoltPoint();
+				point.Point = new GameObject("Bolt Point").transform;
+				Path.Add(point);
+			}
 		}
 		
-		mat.SetFloat("_RenderFlash", 0);
-		isStriking = false;
+		// Scatter path points, but not start and end points
+		for (int i = 1; i < Path.Count - 2; i++)
+		{
+			Path[i].RandPos = Statics.RandVectorPosNeg(ScatterDist);
+		}
 	}
 
-    void Update()
-    {
-		if (!isStriking) {
-			return;
+	void ShockPath()
+	{
+		pathReversed = !pathReversed;
+		shockTime = Time.time;
+	}
+
+	void UpdatePath()
+	{
+		float distPerPoint = (startPoint.position - endPoint.position).magnitude / (Path.Count - 1);
+		float line_distance = 0.0f;
+		for (int i = 1; i < Path.Count - 1; i++)
+		{
+			Vector3 linePos = -(startPoint.position - endPoint.position).normalized * distPerPoint * i;
+			float angle = Mathf.Atan2(startPoint.position.y - endPoint.position.y, endPoint.position.x - startPoint.position.x) * Mathf.Rad2Deg;
+			float waveFrequencySample = Mathf.PerlinNoise(shockTime * 4.24f, linePos.magnitude * AAAAAAAAAAAAAAAAAAAA * 0.1f) * 1.5f + 2.0f;
+			Debug.Log(waveFrequencySample);
+			//waveFrequencySample = 1.0f;
+			line_distance += distPerPoint * waveFrequencySample;
+			float offset = Mathf.Sin(line_distance * ShocksWidth + (pathReversed ? 0 : Mathf.PI / 2));
+			offset = Mathf.Sign(offset);
+			Vector3 wavePos = Vector3.up * offset;
+			Path[i].OffsetPos = Quaternion.AngleAxis(angle, Vector3.forward) * wavePos + linePos;
+			Path[i].Point.position = startPoint.position + Path[i].OffsetPos/* + Path[i].RandPos*/;
 		}
-		LightningRenderer.positionCount = 0;
+		Path[0].Point.position = startPoint.position;
+		Path[Path.Count - 1].Point.position = endPoint.position;
+	}
+
+	void UpdateRenderPoints()
+	{
+		LightningRenderer.positionCount = 1;
 		int posCounter = 0;
 
-		// Move points
-		float distPerPoint = (startPoint.position - endPoint.position).magnitude / Path.Count;
-		for (int i = 0; i < Path.Count - 1; i++)
-		{
-			// Adjust velocity
-			Path[i].OffsetPos += Path[i].Velocity * Time.deltaTime;
-			Path[i].Point.position = startPoint.position + Vector3.one * distPerPoint * i + Path[i].OffsetPos;
-		}
-
-		// Connect each point with the line renderer
 		for (int i = 0; i < Path.Count - 1; i++)
 		{
 			Vector3 StartPos = Path[i].Point.position;
@@ -107,22 +146,67 @@ public class BoltConnector : MonoBehaviour
 			// Split sub-lines into segments, then insert positions accordingly
 			int segmentCount = Mathf.FloorToInt(ToEndPosVector.magnitude / TargetSegmentLength);
 			float segmentLengthModifier = ToEndPosVector.magnitude / (TargetSegmentLength * segmentCount);
-			LightningRenderer.positionCount += segmentCount + 1;
-			for (int j = 0; j < segmentCount + 1; j++)
+			LightningRenderer.positionCount += segmentCount;
+			for (int j = 0; j < segmentCount; j++)
 			{
 				LightningRenderer.SetPosition(j + posCounter, StartPos + (ToEndPosVector.normalized * j * TargetSegmentLength * segmentLengthModifier));
 			}
 			posCounter += segmentCount;
 		}
-		LightningRenderer.SetPosition(posCounter + 1, Path[Path.Count - 1].Point.position);
-		LightningRenderer.positionCount--;
+		LightningRenderer.SetPosition(posCounter, Path[Path.Count - 1].Point.position);
+	}
 
-		// Set line renderer width
+	void UpdateRenderWidth()
+	{
 		AnimationCurve curve = new AnimationCurve();
-		curve.AddKey(new Keyframe (Mathf.Clamp01(ConnectionToWidthCompression.Evaluate(connection) / 2 - 0.0002f), ConnectionToEndWidth.Evaluate(connection), 0, 0));
+		curve.AddKey(new Keyframe(Mathf.Clamp01(ConnectionToWidthCompression.Evaluate(connection) / 2 - 0.0002f), ConnectionToEndWidth.Evaluate(connection), 0, 0));
 		curve.AddKey(new Keyframe(Mathf.Clamp01(0.5f - (ConnectionToGapSize.Evaluate(connection) / 2) - 0.0001f), ConnectionToMidWidth.Evaluate(connection), 0, 0));
 		curve.AddKey(new Keyframe(Mathf.Clamp01(0.5f + (ConnectionToGapSize.Evaluate(connection) / 2) + 0.0001f), ConnectionToMidWidth.Evaluate(connection), 0, 0));
 		curve.AddKey(new Keyframe(Mathf.Clamp01(1 - ConnectionToWidthCompression.Evaluate(connection) / 2 + 0.0002f), ConnectionToEndWidth.Evaluate(connection), 0, 0));
 		LightningRenderer.widthCurve = curve;
+	}
+
+	IEnumerator AnimateStrike () {
+		connection = 1;
+		striking = true;
+		for (float i = 0; i < StrikeLength; i += Time.deltaTime) {
+			// Connection
+			connection = Mathf.Clamp01(1 - (i / StrikeLength));
+			yield return null;
+		}
+		striking = false; 
+	}
+
+	private void Update()
+	{
+		if (!striking)
+		{
+			LightningRenderer.positionCount = 0;
+			mat.SetFloat("_RenderFlash", 0);
+			return;
+		}
+
+		// Shocks
+		if (strikeTimer > 1)
+		{
+			strikeTimer = 0;
+			ShockPath();
+		}
+		strikeTimer += Time.deltaTime * ShockFrequency;
+
+		// Move points
+		UpdatePath();
+
+		// Connect each point with the line renderer
+		UpdateRenderPoints();
+
+		// Set line renderer width
+		UpdateRenderWidth();
+
+		// Update material
+		if (UseFlash && Time.time - lastStrikeTime > StrikeFlashHesitation)
+		{
+			mat.SetFloat("_RenderFlash", Mathf.RoundToInt(FlashShaderInput.Evaluate ((Time.time * FlashSpeed) % 1)));
+		}
 	}
 }
