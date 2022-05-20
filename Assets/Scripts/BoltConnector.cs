@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class BoltConnector : MonoBehaviour
 {
+	[System.Serializable]
 	public class BoltPoint {
 		public Transform Point;
 		public Vector3 Velocity;
 		public Vector3 LinePos;
 		public Vector3 WavePos;
+		public Vector3 OffsetPos;
 		public Vector3 RandPos;
 	}
 
@@ -22,7 +24,7 @@ public class BoltConnector : MonoBehaviour
 	public float ShockFrequency = 2;
 	public float ShocksWidth;
 
-	public float AAAAAAAAAAAAAAAAAAAA = 1f;
+	public float PathPointSpeed = 1f;
 	public float ShockNoiseScale = 1;
 	public float ShockSaveAmplitude = 1.5f;
 
@@ -40,7 +42,7 @@ public class BoltConnector : MonoBehaviour
 	[SerializeField] private float connection;
     private LineRenderer LightningRenderer;
     private Material mat;
-	private List<BoltPoint> Path = new List<BoltPoint>();
+	[SerializeField] private List<BoltPoint> Path = new List<BoltPoint>();
 	private Transform startPoint;
 	private Transform endPoint;
 	private bool pathReversed = false;
@@ -99,6 +101,7 @@ public class BoltConnector : MonoBehaviour
 			{
 				BoltPoint point = new BoltPoint();
 				point.Point = new GameObject("Bolt Point").transform;
+				point.Point.transform.parent = transform;
 				Path.Add(point);
 			}
 		}
@@ -114,6 +117,11 @@ public class BoltConnector : MonoBehaviour
 	{
 		pathReversed = !pathReversed;
 		noiseSeed = Random.Range(-10000, 10000);
+		for (int i = 1; i < Path.Count - 1; i++)
+		{
+			Path[i].OffsetPos = Vector3.zero;
+			Path[i].Velocity = Statics.RandVectorPosNeg() * PathPointSpeed * (pathReversed ? 1 : -1);
+		}
 	}
 
 	void UpdatePath()
@@ -127,7 +135,8 @@ public class BoltConnector : MonoBehaviour
 			Vector3 wavePos = Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * waveFrequencySample;
 			Path[i].LinePos = startPoint.position + linePos;
 			Path[i].WavePos = wavePos;
-			Path[i].Point.position = Path[i].WavePos + Path[i].LinePos + Path[i].RandPos * ScatterDist;
+			Path[i].OffsetPos += Time.deltaTime * Path[i].Velocity;
+			Path[i].Point.position = Path[i].WavePos + Path[i].LinePos + Path[i].OffsetPos + Path[i].RandPos * ScatterDist;
 		}
 		Path[0].Point.position = startPoint.position;
 		Path[Path.Count - 1].Point.position = endPoint.position;
