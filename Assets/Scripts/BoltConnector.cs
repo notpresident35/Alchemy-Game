@@ -7,7 +7,8 @@ public class BoltConnector : MonoBehaviour
 	public class BoltPoint {
 		public Transform Point;
 		public Vector3 Velocity;
-		public Vector3 OffsetPos;
+		public Vector3 LinePos;
+		public Vector3 WavePos;
 		public Vector3 RandPos;
 	}
 
@@ -22,6 +23,8 @@ public class BoltConnector : MonoBehaviour
 	public float ShocksWidth;
 
 	public float AAAAAAAAAAAAAAAAAAAA = 1f;
+	public float ShockNoiseScale = 1;
+	public float ShockSaveAmplitude = 1.5f;
 
 	[Tooltip("Distance in units to scatter each point by")]
 	[Range(0, 2)]
@@ -44,7 +47,7 @@ public class BoltConnector : MonoBehaviour
 	bool striking = false;
 	float strikeTimer = 0;
 	float lastStrikeTime = 0;
-	float shockTime = 0;
+	float noiseSeed = 0;
 	Coroutine strikeCoroutine;
 
     private void Start() {
@@ -67,6 +70,8 @@ public class BoltConnector : MonoBehaviour
 		// Spawn path with number of scattered points based on the distance between the start and end points
 		int pointCount = Mathf.CeilToInt((startPoint.position - endPoint.position).magnitude * PointsPerUnit);
 		CreatePath(pointCount);
+
+		ShockPath();
 
 		// Start animating points
 		UpdatePath();
@@ -101,33 +106,28 @@ public class BoltConnector : MonoBehaviour
 		// Scatter path points, but not start and end points
 		for (int i = 1; i < Path.Count - 2; i++)
 		{
-			Path[i].RandPos = Statics.RandVectorPosNeg(ScatterDist);
+			Path[i].RandPos = Statics.RandVectorPosNeg();
 		}
 	}
 
 	void ShockPath()
 	{
 		pathReversed = !pathReversed;
-		shockTime = Time.time;
+		noiseSeed = Random.Range(-10000, 10000);
 	}
 
 	void UpdatePath()
 	{
 		float distPerPoint = (startPoint.position - endPoint.position).magnitude / (Path.Count - 1);
-		float line_distance = 0.0f;
 		for (int i = 1; i < Path.Count - 1; i++)
 		{
 			Vector3 linePos = -(startPoint.position - endPoint.position).normalized * distPerPoint * i;
 			float angle = Mathf.Atan2(startPoint.position.y - endPoint.position.y, endPoint.position.x - startPoint.position.x) * Mathf.Rad2Deg;
-			float waveFrequencySample = Mathf.PerlinNoise(shockTime * 4.24f, linePos.magnitude * AAAAAAAAAAAAAAAAAAAA * 0.1f) * 1.5f + 2.0f;
-			Debug.Log(waveFrequencySample);
-			//waveFrequencySample = 1.0f;
-			line_distance += distPerPoint * waveFrequencySample;
-			float offset = Mathf.Sin(line_distance * ShocksWidth + (pathReversed ? 0 : Mathf.PI / 2));
-			offset = Mathf.Sign(offset);
-			Vector3 wavePos = Vector3.up * offset;
-			Path[i].OffsetPos = Quaternion.AngleAxis(angle, Vector3.forward) * wavePos + linePos;
-			Path[i].Point.position = startPoint.position + Path[i].OffsetPos/* + Path[i].RandPos*/;
+			float waveFrequencySample = ((Mathf.PerlinNoise(noiseSeed * 4.24f, distPerPoint * i * ShockNoiseScale + (pathReversed ? 0 : ShockNoiseScale)) - 0.5f) / 2) * ShockSaveAmplitude;
+			Vector3 wavePos = Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * waveFrequencySample;
+			Path[i].LinePos = startPoint.position + linePos;
+			Path[i].WavePos = wavePos;
+			Path[i].Point.position = Path[i].WavePos + Path[i].LinePos + Path[i].RandPos * ScatterDist;
 		}
 		Path[0].Point.position = startPoint.position;
 		Path[Path.Count - 1].Point.position = endPoint.position;

@@ -284,7 +284,8 @@ MonoBehaviour:
   CompletenessSinSpeed: 0.5
   obj1: {fileID: 1985001013}
   obj2: {fileID: 1751450258}
-  StrikeCooldown: 3
+  Orbit: 0
+  StrikeCooldown: 1.5
   strikeStartPoint: {fileID: 2113810146}
   strikeStartOrbitPoint: {fileID: 1234465789}
   strikeTargetPoint: {fileID: 2071044352}
@@ -450,10 +451,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92c6224a326256642adad39e2e5afb95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StrikeLength: 5
-  UseFlash: 0
-  StrikeFlashHesitation: 0.1
-  FlashSpeed: 8
+  StrikeLength: 0.7
+  UseFlash: 1
+  StrikeFlashHesitation: 0.08
+  FlashSpeed: 12
   FlashShaderInput:
     serializedVersion: 2
     m_Curve:
@@ -499,9 +500,11 @@ MonoBehaviour:
   ShockFrequency: 0
   ShocksWidth: 1
   AAAAAAAAAAAAAAAAAAAA: 5
+  ShockNoiseScale: 1.74
+  ShockSaveAmplitude: 4.03
   ScatterDist: 0.146
-  PointsPerUnit: 20
-  TargetSegmentLength: 0.05
+  PointsPerUnit: 4
+  TargetSegmentLength: 0.4
   ConnectionToWidthCompression:
     serializedVersion: 2
     m_Curve:
@@ -770,7 +773,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1234465788}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.9, y: 1.04, z: 0}
+  m_LocalPosition: {x: -4.16, y: 0.27, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 194868209}
@@ -994,7 +997,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2113810145}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3, y: 0, z: 0}
+  m_LocalPosition: {x: -3.08, y: -0.83, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 194868209}

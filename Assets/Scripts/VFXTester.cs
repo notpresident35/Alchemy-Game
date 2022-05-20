@@ -10,6 +10,7 @@ public class VFXTester : MonoBehaviour
     public GameObject obj2;
 
 	[Header("Lightning Bolt")]
+	public bool Orbit;
 	public float StrikeCooldown = 1;
 	public Transform strikeStartPoint;
 	public Transform strikeStartOrbitPoint;
@@ -37,6 +38,11 @@ public class VFXTester : MonoBehaviour
 		}
 		timer += Time.deltaTime;
 
-		strikeStartPoint.transform.position = strikeStartOrbitPoint.transform.position /*+ new Vector3 (Mathf.Cos (Time.time * 3), Mathf.Sin (Time.time * 3), 0) * 3*/;
+		if (Orbit)
+		{
+
+			strikeStartPoint.transform.position = strikeStartOrbitPoint.transform.position + new Vector3(Mathf.Cos(Time.time * 3), Mathf.Sin(Time.time * 3), 0) * 3;
+
+		}
 	}
 }
